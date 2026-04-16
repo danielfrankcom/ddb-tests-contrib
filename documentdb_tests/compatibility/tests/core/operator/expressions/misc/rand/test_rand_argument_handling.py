@@ -20,6 +20,7 @@ from documentdb_tests.framework.error_codes import (
     EXPRESSION_NOT_OBJECT_ERROR,
     RAND_UNEXPECTED_ARG_ERROR,
 )
+from documentdb_tests.framework.parametrize import pytest_params
 from documentdb_tests.framework.test_constants import MISSING
 
 
@@ -233,7 +234,7 @@ INVALID_INPUTS: list[ExpressionTestCase] = [
 ]
 
 
-@pytest.mark.parametrize("test", INVALID_INPUTS, ids=lambda t: t.id)
+@pytest.mark.parametrize("test", pytest_params(INVALID_INPUTS))
 def test_rand_invalid_inputs(collection, test):
     """Test rand rejects non-empty array and object arguments."""
     result = execute_expression(collection, test.expression)
@@ -286,7 +287,7 @@ FIELD_REF_TESTS: list[ExpressionTestCase] = [
 ]
 
 
-@pytest.mark.parametrize("test", FIELD_REF_TESTS, ids=lambda t: t.id)
+@pytest.mark.parametrize("test", pytest_params(FIELD_REF_TESTS))
 def test_rand_field_ref_errors(collection, test):
     """Test rand rejects field reference arguments."""
     result = execute_expression_with_insert(collection, test.expression, test.doc)
