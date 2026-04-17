@@ -128,13 +128,18 @@ def test_rand_mod_one(collection):
     assert_expression_result(result, expected=True, msg="Should produce value in [0, 1)")
 
 
-def test_rand_divide_one_by_rand(collection):
-    """Test one divided by rand produces value greater than or equal to one."""
+def test_rand_divide_by_two(collection):
+    """Test rand divided by two produces value in expected range."""
     result = execute_expression(
         collection,
-        {"$gte": [{"$divide": [1, {"$rand": {}}]}, 1.0]},
+        {
+            "$let": {
+                "vars": {"r": {"$divide": [{"$rand": {}}, 2]}},
+                "in": {"$and": [{"$gte": ["$$r", DOUBLE_ZERO]}, {"$lt": ["$$r", 0.5]}]},
+            }
+        },
     )
-    assert_expression_result(result, expected=True, msg="Should produce value >= 1")
+    assert_expression_result(result, expected=True, msg="Should produce value in [0, 0.5)")
 
 
 # ---------------------------------------------------------------------------
