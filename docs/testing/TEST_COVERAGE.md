@@ -364,6 +364,30 @@ For each invalid_type in [string, object, array, ...]:
 
 ---
 
+### 16. Collection Command Coverage
+**Rule**: Each collection command must be tested for its core behavior, argument validation, response structure, and behavior across collection variants. Command tests live under `tests/core/collections/commands/$commandName/`. Data type coverage (section 1) and error code validation (section 6) follow the same rules as other features.
+
+**Core Behavior**:
+- Primary operation succeeds and returns expected response fields
+- Behavior on non-existent collections (some commands succeed silently, others error)
+- Behavior on empty collections created explicitly vs implicitly
+
+**Argument Validation**:
+- Test all BSON types against each required argument — invalid types must be rejected with correct error codes
+- Test invalid values for string arguments (empty, system prefixes, illegal characters where applicable)
+- Test accepted and rejected values for each command-specific option
+- Unrecognized fields in the command document must be rejected
+
+**Response Structure**:
+- Verify all response fields and their types for the command's success case
+- Verify response varies correctly based on collection state (e.g., index count, collection existence)
+
+**Collection Variants**:
+- Test against collection types the command supports: regular, capped, views, timeseries, clustered
+- Verify correct behavior or error for unsupported collection types
+
+---
+
 ## Test Category Checklist
 
 For any DocumentDB feature, ensure coverage of:
@@ -393,6 +417,10 @@ For any DocumentDB feature, ensure coverage of:
 - [ ] **Pipeline stage parameter validation**: accepted types, rejected values, stage shape, parse-time validation (if pipeline stage)
 - [ ] **Pipeline stage document handling**: pass-through preservation or output shape verification (if pipeline stage)
 - [ ] **Pipeline contexts**: one test case per operator per context — $project, $addFields, $match+$expr, $group (if expression operator)
+- [ ] **Collection command core behavior**: success response, non-existent collection, empty collection (if collection command)
+- [ ] **Collection command argument validation**: name type/value, options, unrecognized fields (if collection command)
+- [ ] **Collection command response structure**: all response fields and types verified (if collection command)
+- [ ] **Collection command variants**: behavior across collection types — regular, capped, views (if collection command)
 - [ ] **System variables**: $$ROOT, $$CURRENT, $$REMOVE, $let — only if official documentation says supported
 - [ ] **Negative zero**: `DOUBLE_NEGATIVE_ZERO` and `DECIMAL128_NEGATIVE_ZERO` behavior (if numeric operator)
 - [ ] **Double precision boundaries**: `DOUBLE_NEAR_MAX`, `DOUBLE_MIN_SUBNORMAL`, `DOUBLE_NEAR_MIN` (if accepts double)
