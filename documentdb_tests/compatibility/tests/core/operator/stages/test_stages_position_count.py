@@ -177,9 +177,9 @@ COUNT_INTEGRATION_TESTS = COUNT_PIPELINE_POSITION_TESTS + COUNT_UNICODE_NORMALIZ
 @pytest.mark.parametrize("test_case", pytest_params(COUNT_INTEGRATION_TESTS))
 def test_stages_position_count_cases(collection, test_case: StageTestCase):
     """Test $count composing with other stages at different pipeline positions."""
+    populate_collection(collection, test_case)
     if test_case.setup:
         test_case.setup(collection)
-    populate_collection(collection, test_case)
     result = execute_command(
         collection,
         {
