@@ -8,6 +8,7 @@ from documentdb_tests.compatibility.tests.core.operator.stages.set.utils.set_com
 )
 from documentdb_tests.compatibility.tests.core.operator.stages.utils.stage_test_case import (
     StageTestCase,
+    populate_collection,
 )
 from documentdb_tests.framework.assertions import assertResult
 from documentdb_tests.framework.executor import execute_command
@@ -124,8 +125,7 @@ SET_FIELD_NAME_TESTS = SET_FIELD_NAME_ACCEPTANCE_TESTS + SET_DOLLAR_SIGN_STRING_
 @pytest.mark.parametrize("test_case", pytest_params(SET_FIELD_NAME_TESTS))
 def test_set_field_names(collection, stage_name: str, test_case: StageTestCase):
     """Test $set / $addFields field name acceptance and dollar-sign string cases."""
-    if test_case.docs:
-        collection.insert_many(test_case.docs)
+    populate_collection(collection, test_case)
     pipeline = _replace_stage_name(test_case.pipeline, stage_name)
     result = execute_command(
         collection,

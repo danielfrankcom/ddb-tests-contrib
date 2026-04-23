@@ -8,10 +8,23 @@ from documentdb_tests.compatibility.tests.core.operator.stages.set.utils.set_com
 )
 from documentdb_tests.compatibility.tests.core.operator.stages.utils.stage_test_case import (
     StageTestCase,
+    populate_collection,
 )
 from documentdb_tests.framework.assertions import assertResult
 from documentdb_tests.framework.executor import execute_command
 from documentdb_tests.framework.parametrize import pytest_params
+
+# Property [Non-Existent Collection]: $set on a collection that does not exist
+# returns an empty result set without error.
+SET_NONEXISTENT_COLLECTION_TESTS: list[StageTestCase] = [
+    StageTestCase(
+        "nonexistent_collection",
+        docs=None,
+        pipeline=[{"$set": {"b": 1}}],
+        expected=[],
+        msg="$set on a non-existent collection should return empty result",
+    ),
+]
 
 # Property [Empty Collection]: $set on a collection with no documents returns
 # an empty result set without error.
@@ -57,7 +70,10 @@ SET_CONSECUTIVE_STAGES_TESTS: list[StageTestCase] = [
 ]
 
 SET_PIPELINE_TESTS = (
-    SET_EMPTY_COLLECTION_TESTS + SET_MULTIPLE_DOCUMENTS_TESTS + SET_CONSECUTIVE_STAGES_TESTS
+    SET_NONEXISTENT_COLLECTION_TESTS
+    + SET_EMPTY_COLLECTION_TESTS
+    + SET_MULTIPLE_DOCUMENTS_TESTS
+    + SET_CONSECUTIVE_STAGES_TESTS
 )
 
 
@@ -65,8 +81,7 @@ SET_PIPELINE_TESTS = (
 @pytest.mark.parametrize("test_case", pytest_params(SET_PIPELINE_TESTS))
 def test_set_pipeline(collection, stage_name: str, test_case: StageTestCase):
     """Test $set / $addFields pipeline-level behavior cases."""
-    if test_case.docs:
-        collection.insert_many(test_case.docs)
+    populate_collection(collection, test_case)
     pipeline = _replace_stage_name(test_case.pipeline, stage_name)
     result = execute_command(
         collection,

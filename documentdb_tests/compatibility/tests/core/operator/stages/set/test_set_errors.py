@@ -11,6 +11,7 @@ from documentdb_tests.compatibility.tests.core.operator.stages.set.utils.set_com
 )
 from documentdb_tests.compatibility.tests.core.operator.stages.utils.stage_test_case import (
     StageTestCase,
+    populate_collection,
 )
 from documentdb_tests.framework.assertions import assertResult
 from documentdb_tests.framework.error_codes import (
@@ -324,8 +325,7 @@ SET_ERROR_TESTS = (
 @pytest.mark.parametrize("test_case", pytest_params(SET_ERROR_TESTS))
 def test_set_errors(collection, stage_name: str, test_case: StageTestCase):
     """Test $set / $addFields error cases."""
-    if test_case.docs:
-        collection.insert_many(test_case.docs)
+    populate_collection(collection, test_case)
     pipeline = _replace_stage_name(test_case.pipeline, stage_name)
     result = execute_command(
         collection,

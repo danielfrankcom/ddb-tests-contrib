@@ -6,6 +6,7 @@ import pytest
 
 from documentdb_tests.compatibility.tests.core.operator.stages.utils.stage_test_case import (
     StageTestCase,
+    populate_collection,
 )
 from documentdb_tests.framework.assertions import assertResult
 from documentdb_tests.framework.executor import execute_command
@@ -129,8 +130,7 @@ SET_PIPELINE_POSITION_TESTS: list[StageTestCase] = [
 @pytest.mark.parametrize("test_case", pytest_params(SET_PIPELINE_POSITION_TESTS))
 def test_stages_position_set_cases(collection, test_case: StageTestCase):
     """Test $set composing with other stages at different pipeline positions."""
-    if test_case.docs:
-        collection.insert_many(test_case.docs)
+    populate_collection(collection, test_case)
     result = execute_command(
         collection,
         {
