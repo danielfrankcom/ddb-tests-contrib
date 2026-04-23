@@ -167,6 +167,13 @@ SET_REMOVE_TESTS: list[StageTestCase] = [
         msg="$set should remove a field from each array element via $$REMOVE with dot notation",
     ),
     StageTestCase(
+        "remove_nested_array_traversal",
+        docs=[{"_id": 1, "arr": [[{"x": 1, "y": 2}], [{"x": 3, "y": 4}]]}],
+        pipeline=[{"$set": {"arr.x": "$$REMOVE"}}],
+        expected=[{"_id": 1, "arr": [[{"y": 2}], [{"y": 4}]]}],
+        msg="$set should remove a field from documents inside nested arrays via $$REMOVE",
+    ),
+    StageTestCase(
         "remove_conditional_cond",
         docs=[{"_id": 1, "a": 1, "b": "keep"}, {"_id": 2, "a": 2, "b": "drop"}],
         pipeline=[{"$set": {"b": {"$cond": [{"$eq": ["$a", 2]}, "$$REMOVE", "$b"]}}}],
