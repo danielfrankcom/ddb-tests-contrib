@@ -10,6 +10,7 @@ from bson import Binary, Code, Decimal128, Int64, MaxKey, MinKey, ObjectId, Rege
 
 from documentdb_tests.compatibility.tests.core.operator.stages.utils.stage_test_case import (
     StageTestCase,
+    populate_collection,
 )
 from documentdb_tests.framework.assertions import assertResult
 from documentdb_tests.framework.executor import execute_command
@@ -417,8 +418,7 @@ PROJECT_BSON_TYPE_TESTS = (
 @pytest.mark.parametrize("test_case", pytest_params(PROJECT_BSON_TYPE_TESTS))
 def test_project_bson_type_cases(collection: Any, test_case: StageTestCase):
     """Test that $project preserves BSON types."""
-    if test_case.docs:
-        collection.insert_many(test_case.docs)
+    populate_collection(collection, test_case)
     result = execute_command(
         collection,
         {

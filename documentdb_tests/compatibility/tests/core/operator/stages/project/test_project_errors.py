@@ -21,6 +21,7 @@ from bson.son import SON
 
 from documentdb_tests.compatibility.tests.core.operator.stages.utils.stage_test_case import (
     StageTestCase,
+    populate_collection,
 )
 from documentdb_tests.framework.assertions import assertResult
 from documentdb_tests.framework.error_codes import (
@@ -522,8 +523,7 @@ PROJECT_ERROR_TESTS = (
 @pytest.mark.parametrize("test_case", pytest_params(PROJECT_ERROR_TESTS))
 def test_project_errors(collection: Any, test_case: StageTestCase) -> None:
     """Test $project error cases."""
-    if test_case.docs:
-        collection.insert_many(test_case.docs)
+    populate_collection(collection, test_case)
     result = execute_command(
         collection,
         {

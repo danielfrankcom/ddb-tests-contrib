@@ -11,6 +11,7 @@ from bson import Binary, Decimal128, Int64, ObjectId, Timestamp
 
 from documentdb_tests.compatibility.tests.core.operator.stages.utils.stage_test_case import (
     StageTestCase,
+    populate_collection,
 )
 from documentdb_tests.framework.assertions import assertResult
 from documentdb_tests.framework.executor import execute_command
@@ -1164,8 +1165,7 @@ PROJECT_EXPRESSION_TESTS: list[StageTestCase] = [
 @pytest.mark.parametrize("test_case", pytest_params(PROJECT_EXPRESSION_TESTS))
 def test_project_expression_cases(collection: Any, test_case: StageTestCase):
     """Test that expression operators work within $project."""
-    if test_case.docs:
-        collection.insert_many(test_case.docs)
+    populate_collection(collection, test_case)
     result = execute_command(
         collection,
         {

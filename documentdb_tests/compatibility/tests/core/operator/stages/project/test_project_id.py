@@ -8,6 +8,7 @@ import pytest
 
 from documentdb_tests.compatibility.tests.core.operator.stages.utils.stage_test_case import (
     StageTestCase,
+    populate_collection,
 )
 from documentdb_tests.framework.assertions import assertResult
 from documentdb_tests.framework.executor import execute_command
@@ -78,8 +79,7 @@ PROJECT_ID_BEHAVIOR_TESTS: list[StageTestCase] = [
 @pytest.mark.parametrize("test_case", pytest_params(PROJECT_ID_BEHAVIOR_TESTS))
 def test_project_id(collection: Any, test_case: StageTestCase) -> None:
     """Test $project _id field behavior."""
-    if test_case.docs:
-        collection.insert_many(test_case.docs)
+    populate_collection(collection, test_case)
     result = execute_command(
         collection,
         {

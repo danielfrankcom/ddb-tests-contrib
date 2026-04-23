@@ -8,6 +8,7 @@ import pytest
 
 from documentdb_tests.compatibility.tests.core.operator.stages.utils.stage_test_case import (
     StageTestCase,
+    populate_collection,
 )
 from documentdb_tests.framework.assertions import assertResult
 from documentdb_tests.framework.executor import execute_command
@@ -86,6 +87,32 @@ PROJECT_SUB_PROJECTION_TESTS: list[StageTestCase] = [
         pipeline=[{"$project": {"a": {"x": 1}}}],
         expected=[{"_id": 1}],
         msg="$project sub-projection on a scalar field should omit the field from output",
+    ),
+]
+
+# Property [Non-Existent Collection]: projecting from a collection that does
+# not exist returns an empty result set without error.
+PROJECT_NONEXISTENT_COLLECTION_TESTS: list[StageTestCase] = [
+    StageTestCase(
+        "nonexistent_collection_inclusion",
+        docs=None,
+        pipeline=[{"$project": {"a": 1}}],
+        expected=[],
+        msg="$project inclusion on a non-existent collection should return empty result",
+    ),
+    StageTestCase(
+        "nonexistent_collection_exclusion",
+        docs=None,
+        pipeline=[{"$project": {"a": 0}}],
+        expected=[],
+        msg="$project exclusion on a non-existent collection should return empty result",
+    ),
+    StageTestCase(
+        "nonexistent_collection_computed",
+        docs=None,
+        pipeline=[{"$project": {"r": {"$add": [1, 2]}}}],
+        expected=[],
+        msg="$project computed field on a non-existent collection should return empty result",
     ),
 ]
 
@@ -204,6 +231,7 @@ PROJECT_PIPELINE_SEMANTICS_TESTS: list[StageTestCase] = [
 PROJECT_ACCEPTANCE_TESTS = (
     PROJECT_META_TESTS
     + PROJECT_SUB_PROJECTION_TESTS
+    + PROJECT_NONEXISTENT_COLLECTION_TESTS
     + PROJECT_EMPTY_COLLECTION_TESTS
     + PROJECT_PATH_COLLISION_NON_ERROR_TESTS
     + PROJECT_FIELD_NAME_ACCEPTANCE_TESTS
@@ -215,8 +243,7 @@ PROJECT_ACCEPTANCE_TESTS = (
 @pytest.mark.parametrize("test_case", pytest_params(PROJECT_ACCEPTANCE_TESTS))
 def test_project_acceptance(collection: Any, test_case: StageTestCase) -> None:
     """Test $project accepted inputs."""
-    if test_case.docs:
-        collection.insert_many(test_case.docs)
+    populate_collection(collection, test_case)
     result = execute_command(
         collection,
         {
