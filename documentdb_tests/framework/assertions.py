@@ -8,9 +8,11 @@ import math
 import pprint
 from typing import Any, Callable, Dict, Optional, Union
 
-from bson import Decimal128, Int64
+from bson import Decimal128
 
+from documentdb_tests.framework.bson_compare import strict_equal as _strict_equal
 from documentdb_tests.framework.infra_exceptions import INFRA_EXCEPTION_TYPES as _INFRA_TYPES
+from documentdb_tests.framework.property_checks import _FIELD_ABSENT
 
 _MAX_REPR_LEN = 1000
 
@@ -21,46 +23,6 @@ def _truncate_repr(obj: Any) -> str:
     if len(text) > _MAX_REPR_LEN:
         return text[:_MAX_REPR_LEN] + f"... (truncated, {len(text)} chars total)"
     return text
-
-
-# BSON numeric types that must match exactly during comparison. Python's == operator
-# treats some of these as equal (e.g. int and Int64) but they are distinct BSON types.
-_NUMERIC_BSON_TYPES = (int, float, Int64, Decimal128)
-
-
-def _strict_equal(a: Any, b: Any) -> bool:
-    """Equality with stricter semantics for BSON numeric types.
-
-    Standard == considers -0.0 and 0.0 equal per IEEE 754, but the sign
-    of zero is preserved through arithmetic and operators like $toString.
-    A sign mismatch would cause downstream behavior differences that
-    these tests exist to detect, so we compare the sign bit explicitly
-    when both values are zero floats.
-
-    Python's == also considers int and Int64 equal, but they are distinct
-    BSON types. We reject cross-type numeric comparisons so that test
-    expectations must specify the exact BSON type returned by the server.
-    """
-    # Recurse into containers.
-    if isinstance(a, dict) and isinstance(b, dict):
-        if a.keys() != b.keys():
-            return False
-        return all(_strict_equal(a[k], b[k]) for k in a)
-    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
-        if len(a) != len(b):
-            return False
-        return all(_strict_equal(x, y) for x, y in zip(a, b))
-
-    # Reject cross-type numeric comparisons.
-    if type(a) is not type(b):
-        if isinstance(a, _NUMERIC_BSON_TYPES) and isinstance(b, _NUMERIC_BSON_TYPES):
-            return False
-        return bool(a == b)
-
-    # Distinguish -0.0 from 0.0.
-    if isinstance(a, float) and a == 0.0 and a == b:
-        return math.copysign(1.0, a) == math.copysign(1.0, b)
-    return bool(a == b)
 
 
 def _sort_if_list(value):
@@ -320,3 +282,58 @@ def assertSuccessNaN(
         ignore_doc_order=ignore_doc_order,
         transform=_replace_nan,
     )
+
+
+def _walk_path(doc: dict, path: str) -> Any:
+    """Walk doc along a dotted path, returning _MISSING if absent."""
+    current: Any = doc
+    for part in path.split("."):
+        if not isinstance(current, dict) or part not in current:
+            return _FIELD_ABSENT
+        current = current[part]
+    return current
+
+
+def assertProperties(
+    result: Union[Any, Exception],
+    checks: dict[str, Any],
+    msg: Optional[str] = None,
+) -> None:
+    """Assert that the first result document satisfies property checks.
+
+    Unlike ``assertSuccess`` which compares the entire result document
+    against an expected value, this function checks individual fields
+    by dotted path, allowing structural assertions (existence, type)
+    alongside exact-value checks without specifying every field.
+
+    Each key in ``checks`` is a dotted field path. The value must be a
+    ``Check`` instance for the assertion to apply.
+
+    Args:
+        result: Result to check.
+        checks: Mapping of dotted paths to Check objects.
+        msg: Optional message prefix for failures.
+    """
+    if isinstance(result, Exception):
+        if isinstance(result, _INFRA_TYPES):
+            raise result
+        raise AssertionError(_format_exception_error(result))
+
+    docs = result["cursor"]["firstBatch"]
+    if not docs:
+        prefix = f" {msg}" if msg else ""
+        raise AssertionError(f"[NO_DOCUMENTS]{prefix} Expected at least one document")
+
+    doc = docs[0]
+    failures: list[str] = []
+
+    for path, check in checks.items():
+        actual = _walk_path(doc, path)
+        err = check.check(actual, path)
+        if err:
+            failures.append(err)
+
+    if failures:
+        prefix = f" {msg}" if msg else ""
+        detail = "\n  ".join(failures)
+        raise AssertionError(f"[PROPERTY_MISMATCH]{prefix}\n  {detail}")
