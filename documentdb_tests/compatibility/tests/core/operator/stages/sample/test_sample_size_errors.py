@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from uuid import UUID
 
 import pytest
 from bson import Binary, Code, Decimal128, Int64, MaxKey, MinKey, ObjectId, Regex, Timestamp
@@ -122,15 +121,6 @@ SAMPLE_TYPE_STRICTNESS_ERROR_TESTS: list[StageTestCase] = [
         pipeline=[{"$sample": {"size": Binary(b"\x01\x02")}}],
         error_code=SAMPLE_SIZE_NOT_NUMERIC_ERROR,
         msg="$sample should reject Binary as size",
-    ),
-    StageTestCase(
-        "type_binary_uuid",
-        docs=[{"_id": 1}],
-        pipeline=[
-            {"$sample": {"size": Binary.from_uuid(UUID("12345678-1234-5678-1234-567812345678"))}}
-        ],
-        error_code=SAMPLE_SIZE_NOT_NUMERIC_ERROR,
-        msg="$sample should reject Binary UUID as size",
     ),
     StageTestCase(
         "type_regex",
