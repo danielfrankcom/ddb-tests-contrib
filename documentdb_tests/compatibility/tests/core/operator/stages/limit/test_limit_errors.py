@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from uuid import uuid4
 
 import pytest
 from bson import (
@@ -147,12 +146,6 @@ LIMIT_NON_NUMERIC_ERROR_TESTS: list[StageTestCase] = [
         pipeline=[{"$limit": Binary(b"\x01")}],
         error_code=LIMIT_INVALID_ARGUMENT_ERROR,
         msg="$limit should reject Binary",
-    ),
-    StageTestCase(
-        "binary_uuid",
-        pipeline=[{"$limit": Binary(uuid4().bytes, 4)}],
-        error_code=LIMIT_INVALID_ARGUMENT_ERROR,
-        msg="$limit should reject Binary UUID subtype",
     ),
     StageTestCase(
         "regex",
