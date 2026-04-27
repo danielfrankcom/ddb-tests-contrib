@@ -1,4 +1,9 @@
-"""Tests for $sample stage statistical properties."""
+"""Tests for $sample stage statistical properties.
+
+These tests verify statistical properties (randomness, distribution) of
+$sample, which require repeated execution and custom assertions rather
+than the deterministic StageTestCase/assertResult pattern.
+"""
 
 from __future__ import annotations
 
