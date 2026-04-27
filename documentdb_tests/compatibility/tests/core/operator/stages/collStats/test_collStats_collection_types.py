@@ -363,7 +363,8 @@ def test_collStats_collection_types_timeseries_scale_invariance(database_client,
             "cursor": {},
         },
     )
-    assert not isinstance(base, Exception), f"unexpected error: {base}"
+    if isinstance(base, Exception):
+        raise AssertionError(f"unexpected error: {base}")
     base_ts = base["cursor"]["firstBatch"][0]["storageStats"]["timeseries"]
     assertProperties(
         scaled,

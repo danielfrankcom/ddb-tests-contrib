@@ -113,7 +113,8 @@ def test_collStats_data_values_total_index_size_equals_sum(collection):
             "cursor": {},
         },
     )
-    assert not isinstance(result, Exception), f"unexpected error: {result}"
+    if isinstance(result, Exception):
+        raise AssertionError(f"unexpected error: {result}")
     stats = result["cursor"]["firstBatch"][0]["storageStats"]
     index_sum = sum(stats["indexSizes"].values())
     assertProperties(

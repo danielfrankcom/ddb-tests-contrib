@@ -237,7 +237,8 @@ def test_collStats_output_histogram_structure(collection):
         },
     )
 
-    assert not isinstance(result, Exception), f"unexpected error: {result}"
+    if isinstance(result, Exception):
+        raise AssertionError(f"unexpected error: {result}")
     doc = result["cursor"]["firstBatch"][0]
     errors: list[str] = []
     for name in ["reads", "writes", "commands", "transactions"]:

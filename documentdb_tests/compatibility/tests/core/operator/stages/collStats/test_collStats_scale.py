@@ -372,7 +372,8 @@ def test_collStats_scale_divides_size_fields(collection):
             "cursor": {},
         },
     )
-    assert not isinstance(base, Exception), f"unexpected error: {base}"
+    if isinstance(base, Exception):
+        raise AssertionError(f"unexpected error: {base}")
     b = base["cursor"]["firstBatch"][0]["storageStats"]
     checks: dict[str, Eq] = {"storageStats.nindexes": Eq(2)}
     for field in SCALE_AFFECTED_FIELDS:
@@ -412,7 +413,8 @@ def test_collStats_scale_capped_max_size(database_client, collection):
             "cursor": {},
         },
     )
-    assert not isinstance(base, Exception), f"unexpected error: {base}"
+    if isinstance(base, Exception):
+        raise AssertionError(f"unexpected error: {base}")
     b = base["cursor"]["firstBatch"][0]["storageStats"]
     assertProperties(
         scaled,
