@@ -283,6 +283,21 @@ SKIP_LOOKUP_TESTS: list[StageTestCase] = [
     ),
 ]
 
+# Property [Unwind + Skip]: $unwind followed by $skip drops the first N
+# unwound documents.
+SKIP_UNWIND_TESTS: list[StageTestCase] = [
+    StageTestCase(
+        "unwind_then_skip",
+        docs=[{"_id": 1, "arr": [10, 20, 30, 40]}],
+        pipeline=[
+            {"$unwind": "$arr"},
+            {"$skip": 2},
+        ],
+        expected=[{"_id": 1, "arr": 30}, {"_id": 1, "arr": 40}],
+        msg="$unwind + $skip should drop the first N unwound documents",
+    ),
+]
+
 # Property [Pagination]: $sort + $skip + $limit produces correct,
 # non-overlapping pages that together cover the full result set.
 SKIP_PAGINATION_TESTS: list[StageTestCase] = [
@@ -332,6 +347,7 @@ SKIP_POSITION_TESTS = (
     + SKIP_PROJECT_TESTS
     + SKIP_GROUP_TESTS
     + SKIP_LOOKUP_TESTS
+    + SKIP_UNWIND_TESTS
     + SKIP_PAGINATION_TESTS
 )
 
