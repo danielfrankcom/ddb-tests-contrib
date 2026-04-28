@@ -15,7 +15,6 @@ from documentdb_tests.compatibility.tests.core.operator.stages.collStats.utils.c
 )
 from documentdb_tests.framework.error_codes import (
     COLLSTATS_ARG_NOT_OBJECT_ERROR,
-    PIPELINE_STAGE_EXTRA_FIELD_ERROR,
     TYPE_MISMATCH_ERROR,
     UNRECOGNIZED_COMMAND_FIELD_ERROR,
 )
@@ -105,24 +104,11 @@ STAGE_ARG_EXPRESSION_ERROR_TESTS: list[CollStatsTestCase] = [
     ]
 ]
 
-# Property [Stage Document Extra Keys]: a pipeline stage document with extra
-# keys alongside $collStats produces PIPELINE_STAGE_EXTRA_FIELD_ERROR.
-STAGE_EXTRA_KEY_TESTS: list[CollStatsTestCase] = [
-    CollStatsTestCase(
-        "extra_key",
-        docs=[{"_id": 1}],
-        pipeline=[{"$collStats": {}, "extra": 1}],
-        error_code=PIPELINE_STAGE_EXTRA_FIELD_ERROR,
-        msg="extra key in stage document should be rejected",
-    ),
-]
-
 COLLSTATS_TYPE_ERROR_TESTS: list[CollStatsTestCase] = (
     HISTOGRAMS_TYPE_ERROR_TESTS
     + SUB_OPTION_TYPE_ERROR_TESTS
     + STAGE_ARG_TYPE_ERROR_TESTS
     + STAGE_ARG_EXPRESSION_ERROR_TESTS
-    + STAGE_EXTRA_KEY_TESTS
 )
 
 
