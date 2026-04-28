@@ -53,7 +53,7 @@ HISTOGRAMS_TYPE_ERROR_TESTS: list[CollStatsTestCase] = [
         docs=[{"_id": 1}],
         pipeline=[{"$collStats": {"latencyStats": {"histograms": value}}}],
         error_code=TYPE_MISMATCH_ERROR,
-        msg=f"latencyStats.histograms={value!r} should produce error 14",
+        msg=f"latencyStats.histograms={value!r} should be rejected as non-boolean",
     )
     for value, case_id in _ALL_BSON_VALUES
     if value is not True
@@ -68,7 +68,7 @@ SUB_OPTION_TYPE_ERROR_TESTS: list[CollStatsTestCase] = [
         docs=[{"_id": 1}],
         pipeline=[{"$collStats": {sub_option: value}}],
         error_code=TYPE_MISMATCH_ERROR,
-        msg=f"{sub_option!r}={value!r} should produce error 14",
+        msg=f"{sub_option!r}={value!r} should be rejected as non-document",
     )
     for sub_option in ["latencyStats", "storageStats", "count", "queryExecStats"]
     for value, type_id in _ALL_BSON_VALUES
@@ -83,7 +83,7 @@ STAGE_ARG_TYPE_ERROR_TESTS: list[CollStatsTestCase] = [
         docs=[{"_id": 1}],
         pipeline=[{"$collStats": value}],
         error_code=COLLSTATS_ARG_NOT_OBJECT_ERROR,
-        msg=f"$collStats with {case_id!r} argument should produce error 5447000",
+        msg=f"$collStats with {case_id!r} argument should be rejected as non-document",
     )
     for value, case_id in _ALL_BSON_VALUES
     if not isinstance(value, dict)
@@ -97,7 +97,7 @@ STAGE_ARG_EXPRESSION_ERROR_TESTS: list[CollStatsTestCase] = [
         docs=[{"_id": 1}],
         pipeline=[{"$collStats": arg}],
         error_code=UNRECOGNIZED_COMMAND_FIELD_ERROR,
-        msg=f"$collStats with {case_id!r} argument should produce error 40415",
+        msg=f"$collStats with {case_id!r} expression argument should be rejected",
     )
     for arg, case_id in [
         ({"$literal": {}}, "expression_literal"),
@@ -113,7 +113,7 @@ STAGE_EXTRA_KEY_TESTS: list[CollStatsTestCase] = [
         docs=[{"_id": 1}],
         pipeline=[{"$collStats": {}, "extra": 1}],
         error_code=PIPELINE_STAGE_EXTRA_FIELD_ERROR,
-        msg="extra key in stage document should produce error 40323",
+        msg="extra key in stage document should be rejected",
     ),
 ]
 

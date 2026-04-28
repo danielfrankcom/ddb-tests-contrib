@@ -74,19 +74,19 @@ NONEXISTENT_COLLECTION_TESTS: list[CollStatsTestCase] = [
         "nonexistent_storageStats_error",
         pipeline=[{"$collStats": {"storageStats": {}}}],
         error_code=NAMESPACE_NOT_FOUND_ERROR,
-        msg="storageStats on non-existent collection should produce error 26",
+        msg="storageStats on non-existent collection should fail",
     ),
     CollStatsTestCase(
         "nonexistent_count_error",
         pipeline=[{"$collStats": {"count": {}}}],
         error_code=NAMESPACE_NOT_FOUND_ERROR,
-        msg="count on non-existent collection should produce error 26",
+        msg="count on non-existent collection should fail",
     ),
     CollStatsTestCase(
         "nonexistent_queryExecStats_error",
         pipeline=[{"$collStats": {"queryExecStats": {}}}],
         error_code=NAMESPACE_NOT_FOUND_ERROR,
-        msg="queryExecStats on non-existent collection should produce error 26",
+        msg="queryExecStats on non-existent collection should fail",
     ),
     CollStatsTestCase(
         "storageStats_null_on_nonexistent",
@@ -117,21 +117,21 @@ VIEW_ERROR_TESTS: list[CollStatsTestCase] = [
         target_collection=ViewCollection(),
         pipeline=[{"$collStats": {"storageStats": {}}}],
         error_code=COMMAND_NOT_SUPPORTED_ON_VIEW_ERROR,
-        msg="'storageStats' on a view should produce error 166",
+        msg="'storageStats' on a view should be rejected",
     ),
     CollStatsTestCase(
         "count_on_view",
         target_collection=ViewCollection(),
         pipeline=[{"$collStats": {"count": {}}}],
         error_code=COMMAND_NOT_SUPPORTED_ON_VIEW_ERROR,
-        msg="'count' on a view should produce error 166",
+        msg="'count' on a view should be rejected",
     ),
     CollStatsTestCase(
         "queryExecStats_on_view",
         target_collection=ViewCollection(),
         pipeline=[{"$collStats": {"queryExecStats": {}}}],
         error_code=COMMAND_NOT_SUPPORTED_ON_VIEW_ERROR,
-        msg="'queryExecStats' on a view should produce error 166",
+        msg="'queryExecStats' on a view should be rejected",
     ),
 ]
 
@@ -336,7 +336,7 @@ def test_collStats_collection_types_view_on_view_error(database_client, collecti
     assertFailureCode(
         result,
         COMMAND_NOT_SUPPORTED_ON_VIEW_ERROR,
-        msg=f"$collStats {sub_option!r} on a view-on-view should produce error 166",
+        msg=f"$collStats {sub_option!r} on a view-on-view should be rejected",
     )
 
 
