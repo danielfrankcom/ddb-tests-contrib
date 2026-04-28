@@ -99,18 +99,72 @@ ORDER_INDEPENDENCE_TESTS: list[CollStatsTestCase] = [
 # non-null value, regardless of key ordering.
 DUPLICATE_KEY_TESTS: list[CollStatsTestCase] = [
     CollStatsTestCase(
-        "null_then_enabled",
+        "count_null_then_enabled",
         docs=[{"_id": 1}],
         pipeline=[{"$collStats": build_raw_bson_doc([("count", None), ("count", {})])}],
         checks={"count": Exists()},
         msg="duplicate keys (null then enabled) should enable count",
     ),
     CollStatsTestCase(
-        "enabled_then_null",
+        "count_enabled_then_null",
         docs=[{"_id": 1}],
         pipeline=[{"$collStats": build_raw_bson_doc([("count", {}), ("count", None)])}],
         checks={"count": Exists()},
         msg="duplicate keys (enabled then null) should enable count",
+    ),
+    CollStatsTestCase(
+        "storageStats_null_then_enabled",
+        docs=[{"_id": 1}],
+        pipeline=[
+            {"$collStats": build_raw_bson_doc([("storageStats", None), ("storageStats", {})])}
+        ],
+        checks={"storageStats": Exists()},
+        msg="duplicate keys (null then enabled) should enable storageStats",
+    ),
+    CollStatsTestCase(
+        "storageStats_enabled_then_null",
+        docs=[{"_id": 1}],
+        pipeline=[
+            {"$collStats": build_raw_bson_doc([("storageStats", {}), ("storageStats", None)])}
+        ],
+        checks={"storageStats": Exists()},
+        msg="duplicate keys (enabled then null) should enable storageStats",
+    ),
+    CollStatsTestCase(
+        "latencyStats_null_then_enabled",
+        docs=[{"_id": 1}],
+        pipeline=[
+            {"$collStats": build_raw_bson_doc([("latencyStats", None), ("latencyStats", {})])}
+        ],
+        checks={"latencyStats": Exists()},
+        msg="duplicate keys (null then enabled) should enable latencyStats",
+    ),
+    CollStatsTestCase(
+        "latencyStats_enabled_then_null",
+        docs=[{"_id": 1}],
+        pipeline=[
+            {"$collStats": build_raw_bson_doc([("latencyStats", {}), ("latencyStats", None)])}
+        ],
+        checks={"latencyStats": Exists()},
+        msg="duplicate keys (enabled then null) should enable latencyStats",
+    ),
+    CollStatsTestCase(
+        "queryExecStats_null_then_enabled",
+        docs=[{"_id": 1}],
+        pipeline=[
+            {"$collStats": build_raw_bson_doc([("queryExecStats", None), ("queryExecStats", {})])}
+        ],
+        checks={"queryExecStats": Exists()},
+        msg="duplicate keys (null then enabled) should enable queryExecStats",
+    ),
+    CollStatsTestCase(
+        "queryExecStats_enabled_then_null",
+        docs=[{"_id": 1}],
+        pipeline=[
+            {"$collStats": build_raw_bson_doc([("queryExecStats", {}), ("queryExecStats", None)])}
+        ],
+        checks={"queryExecStats": Exists()},
+        msg="duplicate keys (enabled then null) should enable queryExecStats",
     ),
 ]
 
