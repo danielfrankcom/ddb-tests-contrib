@@ -55,7 +55,7 @@ HISTOGRAMS_TYPE_ERROR_TESTS: list[CollStatsTestCase] = [
         msg=f"latencyStats.histograms={value!r} should be rejected as non-boolean",
     )
     for value, case_id in _ALL_BSON_VALUES
-    if value is not True
+    if not isinstance(value, bool)
 ]
 
 # Property [Sub-Option Type Validation Errors]: all non-document, non-null
