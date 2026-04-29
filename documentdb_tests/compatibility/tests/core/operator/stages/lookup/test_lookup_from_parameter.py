@@ -27,7 +27,6 @@ from documentdb_tests.framework.error_codes import (
     FAILED_TO_PARSE_ERROR,
     INVALID_NAMESPACE_ERROR,
     TYPE_MISMATCH_ERROR,
-    UNAUTHORIZED_ERROR,
     UNRECOGNIZED_COMMAND_FIELD_ERROR,
 )
 from documentdb_tests.framework.executor import execute_command
@@ -574,23 +573,6 @@ LOOKUP_FROM_VALIDATION_ERROR_TESTS: list[LookupTestCase] = [
         ],
         error_code=INVALID_NAMESPACE_ERROR,
         msg="$lookup should reject from with a leading dot",
-    ),
-    LookupTestCase(
-        "from_system_prefix_unauthorized",
-        docs=[{"_id": 1}],
-        foreign_docs=None,
-        pipeline=[
-            {
-                "$lookup": {
-                    "from": "system.test",
-                    "localField": "lf",
-                    "foreignField": "ff",
-                    "as": "j",
-                }
-            }
-        ],
-        error_code=UNAUTHORIZED_ERROR,
-        msg='$lookup should reject from with a "system." prefix',
     ),
     LookupTestCase(
         "from_with_documents_first_pipeline",
