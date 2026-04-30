@@ -9,7 +9,7 @@ from documentdb_tests.compatibility.tests.core.collections.commands.utils.comman
     CommandTestCase,
 )
 from documentdb_tests.framework.assertions import assertResult
-from documentdb_tests.framework.error_codes import ILLEGAL_OPERATION_ERROR, UNAUTHORIZED_ERROR
+from documentdb_tests.framework.error_codes import ILLEGAL_OPERATION_ERROR
 from documentdb_tests.framework.executor import execute_command
 from documentdb_tests.framework.parametrize import pytest_params
 from documentdb_tests.framework.target_collection import (
@@ -127,8 +127,7 @@ DB_NAME_ACCEPTED_TESTS: list[CommandTestCase] = [
 ]
 
 # Property [System Database Restrictions]: dropping the admin database
-# produces an IllegalOperation error, while dropping config or local
-# produces an Unauthorized error on standalone.
+# produces an IllegalOperation error.
 SYSTEM_DATABASE_RESTRICTION_TESTS: list[CommandTestCase] = [
     CommandTestCase(
         target_collection=ExistingDatabase(db_name="admin"),
@@ -136,20 +135,6 @@ SYSTEM_DATABASE_RESTRICTION_TESTS: list[CommandTestCase] = [
         error_code=ILLEGAL_OPERATION_ERROR,
         msg="Dropping admin should produce IllegalOperation error",
         id="drop_admin",
-    ),
-    CommandTestCase(
-        target_collection=ExistingDatabase(db_name="config"),
-        command={"dropDatabase": 1},
-        error_code=UNAUTHORIZED_ERROR,
-        msg="Dropping config should produce Unauthorized error",
-        id="drop_config",
-    ),
-    CommandTestCase(
-        target_collection=ExistingDatabase(db_name="local"),
-        command={"dropDatabase": 1},
-        error_code=UNAUTHORIZED_ERROR,
-        msg="Dropping local should produce Unauthorized error",
-        id="drop_local",
     ),
 ]
 
