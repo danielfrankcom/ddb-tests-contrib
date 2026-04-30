@@ -67,6 +67,20 @@ UNSET_DOTTED_PATH_TESTS: list[StageTestCase] = [
             " literal numeric key from a subdocument"
         ),
     ),
+    StageTestCase(
+        "dotted_through_null_parent",
+        docs=[{"_id": 1, "a": None, "b": 10}],
+        pipeline=[{"$unset": "a.x"}],
+        expected=[{"_id": 1, "a": None, "b": 10}],
+        msg="$unset with dot notation through a null parent should leave the document unchanged",
+    ),
+    StageTestCase(
+        "dotted_through_missing_parent",
+        docs=[{"_id": 1, "b": 10}],
+        pipeline=[{"$unset": "a.x"}],
+        expected=[{"_id": 1, "b": 10}],
+        msg="$unset with dot notation through a missing parent should leave the document unchanged",
+    ),
 ]
 
 # Property [_id Interactions]: $unset treats _id like any other field,
