@@ -27,9 +27,13 @@ class IndexTestCase(BaseTestCase):
         setup_indexes: Optional indexes to create before the main operation
             (for conflict/duplicate tests).
         comment: Optional comment field for the command.
+        write_concern: Optional writeConcern for the command.
+        invalid_input: Optional invalid BSON value for type-rejection tests.
     """
 
-    indexes: tuple = ()
+    indexes: Optional[tuple] = ()
     doc: Optional[tuple] = None
-    setup_indexes: Optional[tuple] = None
+    setup_indexes: Optional[list] = None
     comment: Optional[Any] = None
+    write_concern: Optional[dict] = None
+    invalid_input: Optional[Any] = None
