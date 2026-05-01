@@ -5,17 +5,7 @@ from __future__ import annotations
 import datetime
 
 import pytest
-from bson import (
-    Binary,
-    Code,
-    Decimal128,
-    Int64,
-    MaxKey,
-    MinKey,
-    ObjectId,
-    Regex,
-    Timestamp,
-)
+from bson import Binary, Code, Decimal128, Int64, MaxKey, MinKey, ObjectId, Regex, Timestamp
 
 from documentdb_tests.compatibility.tests.core.operator.stages.lookup.utils.lookup_common import (
     FOREIGN,

@@ -12,10 +12,7 @@ from documentdb_tests.compatibility.tests.core.operator.stages.lookup.utils.look
     build_lookup_command,
     setup_lookup,
 )
-from documentdb_tests.framework.assertions import (
-    assertResult,
-    assertSuccess,
-)
+from documentdb_tests.framework.assertions import assertResult, assertSuccess
 from documentdb_tests.framework.error_codes import (
     CHANGE_STREAM_NOT_ALLOWED_ERROR,
     FACET_PIPELINE_INVALID_STAGE_ERROR,

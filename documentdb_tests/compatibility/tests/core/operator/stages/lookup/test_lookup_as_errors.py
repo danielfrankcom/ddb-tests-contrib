@@ -3,17 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from bson import (
-    Binary,
-    Code,
-    Decimal128,
-    Int64,
-    MaxKey,
-    MinKey,
-    ObjectId,
-    Regex,
-    Timestamp,
-)
+from bson import Binary, Code, Decimal128, Int64, MaxKey, MinKey, ObjectId, Regex, Timestamp
 
 from documentdb_tests.compatibility.tests.core.operator.stages.lookup.utils.lookup_common import (
     FOREIGN,
@@ -28,7 +18,7 @@ from documentdb_tests.framework.error_codes import (
     FIELD_PATH_EMPTY_ERROR,
     FIELD_PATH_NULL_BYTE_ERROR,
     FIELD_PATH_TRAILING_DOT_ERROR,
-    MISSING_REQUIRED_FIELD_ERROR,
+    MISSING_FIELD_ERROR,
     TYPE_MISMATCH_ERROR,
 )
 from documentdb_tests.framework.executor import execute_command
@@ -306,7 +296,7 @@ LOOKUP_AS_TYPE_ERROR_TESTS: list[LookupTestCase] = [
                 }
             }
         ],
-        error_code=MISSING_REQUIRED_FIELD_ERROR,
+        error_code=MISSING_FIELD_ERROR,
         msg="$lookup should treat as=null as missing required field",
     ),
     LookupTestCase(
@@ -322,7 +312,7 @@ LOOKUP_AS_TYPE_ERROR_TESTS: list[LookupTestCase] = [
                 }
             }
         ],
-        error_code=MISSING_REQUIRED_FIELD_ERROR,
+        error_code=MISSING_FIELD_ERROR,
         msg="$lookup should reject omitting the as parameter",
     ),
 ]
