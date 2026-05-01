@@ -252,6 +252,25 @@ LOOKUP_PIPELINE_POSITION_TESTS: list[LookupTestCase] = [
         msg="$unwind after $lookup should flatten the joined array",
     ),
     LookupTestCase(
+        "lookup_then_unwind_exceeds_16mb",
+        docs=[{"_id": 1, "lf": "m"}],
+        foreign_docs=[{"_id": i, "ff": "m", "data": "x" * 1_000_000} for i in range(20)],
+        pipeline=[
+            {
+                "$lookup": {
+                    "from": FOREIGN,
+                    "localField": "lf",
+                    "foreignField": "ff",
+                    "as": "j",
+                }
+            },
+            {"$unwind": "$j"},
+            {"$count": "n"},
+        ],
+        expected=[{"n": 20}],
+        msg="$unwind after $lookup should handle joined array exceeding 16MB",
+    ),
+    LookupTestCase(
         "lookup_then_group",
         docs=[
             {"_id": 1, "lf": "a"},
