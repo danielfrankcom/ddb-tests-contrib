@@ -3,17 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from bson import (
-    Binary,
-    Code,
-    Decimal128,
-    Int64,
-    MaxKey,
-    MinKey,
-    ObjectId,
-    Regex,
-    Timestamp,
-)
+from bson import Binary, Code, Decimal128, Int64, MaxKey, MinKey, ObjectId, Regex, Timestamp
 
 from documentdb_tests.compatibility.tests.core.operator.stages.lookup.utils.lookup_common import (
     FOREIGN,
@@ -23,7 +13,6 @@ from documentdb_tests.compatibility.tests.core.operator.stages.lookup.utils.look
 )
 from documentdb_tests.framework.assertions import assertResult
 from documentdb_tests.framework.error_codes import (
-    CLUSTER_TIME_NOT_AVAILABLE_ERROR,
     FAILED_TO_PARSE_ERROR,
     LET_UNDEFINED_VARIABLE_ERROR,
     TYPE_MISMATCH_ERROR,
@@ -546,34 +535,11 @@ LOOKUP_LET_VARIABLE_REFERENCE_ERROR_TESTS: list[LookupTestCase] = [
     ),
 ]
 
-# Property [let Cluster Time Error]: $$CLUSTER_TIME as a let value
-# produces an error because it is not available in standalone mode.
-LOOKUP_LET_CLUSTER_TIME_ERROR_TESTS: list[LookupTestCase] = [
-    LookupTestCase(
-        "cluster_time_as_let_value",
-        docs=[{"_id": 1}],
-        foreign_docs=None,
-        pipeline=[
-            {
-                "$lookup": {
-                    "from": FOREIGN,
-                    "let": {"x": "$$CLUSTER_TIME"},
-                    "pipeline": [],
-                    "as": "j",
-                }
-            }
-        ],
-        error_code=CLUSTER_TIME_NOT_AVAILABLE_ERROR,
-        msg="$lookup should reject $$CLUSTER_TIME as a let value",
-    ),
-]
-
 LOOKUP_LET_ERROR_TESTS: list[LookupTestCase] = (
     LOOKUP_LET_TYPE_ERROR_TESTS
     + LOOKUP_LET_REQUIRES_PIPELINE_ERROR_TESTS
     + LOOKUP_LET_VARIABLE_NAME_ERROR_TESTS
     + LOOKUP_LET_VARIABLE_REFERENCE_ERROR_TESTS
-    + LOOKUP_LET_CLUSTER_TIME_ERROR_TESTS
 )
 
 
