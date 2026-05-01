@@ -11,7 +11,7 @@ from documentdb_tests.compatibility.tests.core.collections.commands.utils.comman
 from documentdb_tests.framework.assertions import assertResult
 from documentdb_tests.framework.error_codes import (
     DROP_DATABASE_VALUE_ERROR,
-    MISSING_REQUIRED_FIELD_ERROR,
+    MISSING_FIELD_ERROR,
     TYPE_MISMATCH_ERROR,
 )
 from documentdb_tests.framework.executor import execute_command
@@ -132,7 +132,7 @@ DROP_DATABASE_NUMERIC_COERCION_TESTS: list[CommandTestCase] = [
 NULL_DROP_DATABASE_FIELD_TESTS: list[CommandTestCase] = [
     CommandTestCase(
         command={"dropDatabase": None},
-        error_code=MISSING_REQUIRED_FIELD_ERROR,
+        error_code=MISSING_FIELD_ERROR,
         msg="Null dropDatabase field should produce missing-field error",
         id="null_drop_database",
     ),
